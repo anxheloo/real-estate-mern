@@ -1,5 +1,6 @@
 import React, { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import axios from "axios";
 
 const SignOut = () => {
   const [formData, setFormData] = useState({
@@ -7,6 +8,10 @@ const SignOut = () => {
     email: "",
     password: "",
   });
+  const [error, setError] = useState(null);
+  const [isLoading, setIsLoading] = useState(false);
+
+  const navigate = useNavigate();
 
   const handleChange = (event) => {
     setFormData((prevValues) => ({
@@ -17,10 +22,39 @@ const SignOut = () => {
 
   const handleSignUpBtn = async (event) => {
     event.preventDefault();
+    setIsLoading(true);
 
-    const res = await fetch("/api/auth/signup", formData);
+    try {
+      const res = await fetch("/api/auth/signup", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(formData),
+      });
 
-    console.log("form submitted");
+      // const res = await axios.post("/api/auth/signup", formData);
+      const data = await res.json();
+      // console.log("this is res:", res);
+      // console.log("this is res.data:", res.data);
+      console.log("this is data:", data);
+
+      if (data.success === false) {
+        setIsLoading(false);
+        setError(data.message);
+        return;
+      }
+
+      setIsLoading(false);
+      setError(null);
+      navigate("/sign-in");
+    } catch (error) {
+      console.log("this is error:", error);
+      setIsLoading(false);
+      setError(error.message);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const handleGoogleBtn = (event) => {
@@ -72,11 +106,13 @@ const SignOut = () => {
 
         <button
           type="submit"
+          disabled={isLoading}
           className="bg-slate-700 text-white p-3 rounded-lg uppercase hover:opacity-90 active:opacity-80 disabled:opacity-70 mt-4"
           onClick={handleSignUpBtn}
         >
-          Sign Up
+          {isLoading ? "Loading..." : "Sign Up"}
         </button>
+
         <button
           type="text"
           className="bg-slate-700 text-white p-3 rounded-lg uppercase hover:opacity-90 active:opacity-80 disabled:opacity-70"
@@ -84,6 +120,8 @@ const SignOut = () => {
         >
           Continue with google
         </button>
+
+        <p>{error}</p>
       </form>
 
       <h3 className=" w-full max-w-[600px] mx-auto px-5">
