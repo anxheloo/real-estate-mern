@@ -27,3 +27,15 @@ app.listen(3000, () => {
 //routes
 app.use("/api/user", userRouter);
 app.use("/api/auth", authRouter);
+
+// global error-handling middleware
+app.use((error, req, res, next) => {
+  const status = error.status || 500;
+  const message = error.message || "Internal Server Error";
+
+  res.status(status).json({
+    success: false,
+    status,
+    message,
+  });
+});
