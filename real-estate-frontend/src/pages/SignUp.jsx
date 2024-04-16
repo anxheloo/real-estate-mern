@@ -13,13 +13,20 @@ const SignOut = () => {
       ...prevValues,
       [event.target.name]: event.target.value,
     }));
-
-    console.log(formData);
   };
 
-  const handleSignUpBtn = () => {};
+  const handleSignUpBtn = async (event) => {
+    event.preventDefault();
 
-  const handleGoogleBtn = () => {};
+    const res = await fetch("/api/auth/signup", formData);
+
+    console.log("form submitted");
+  };
+
+  const handleGoogleBtn = (event) => {
+    event.preventDefault();
+    console.log("form submitted");
+  };
 
   return (
     <div
@@ -29,7 +36,10 @@ const SignOut = () => {
       className="w-full h-full min-h-[70vh] flex flex-col justify-center "
     >
       <h1 className="text-3xl text-center font-semibold py-7">Sign Up</h1>
-      <form className="flex flex-col gap-3 w-full max-w-[600px] mx-auto p-5 ">
+      <form
+        onSubmit={handleSignUpBtn}
+        className="flex flex-col gap-3 w-full max-w-[600px] mx-auto p-5 "
+      >
         <input
           id="username"
           className="border p-3 rounded-lg outline-none caret-black "
@@ -61,15 +71,15 @@ const SignOut = () => {
         ></input>
 
         <button
-          type="text"
-          className="bg-slate-700 text-white p-3 rounded-lg uppercase hover:opacity-90 disabled:opacity-80 mt-4"
+          type="submit"
+          className="bg-slate-700 text-white p-3 rounded-lg uppercase hover:opacity-90 active:opacity-80 disabled:opacity-70 mt-4"
           onClick={handleSignUpBtn}
         >
           Sign Up
         </button>
         <button
           type="text"
-          className="bg-slate-700 text-white p-3 rounded-lg uppercase hover:opacity-90 disabled:opacity-80"
+          className="bg-slate-700 text-white p-3 rounded-lg uppercase hover:opacity-90 active:opacity-80 disabled:opacity-70"
           onClick={handleGoogleBtn}
         >
           Continue with google
