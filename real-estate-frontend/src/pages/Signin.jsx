@@ -1,15 +1,22 @@
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import { useSelector, useDispatch } from "react-redux";
+import {
+  signInStart,
+  signInFailure,
+  signInSuccess,
+} from "../store/user/userSlice.js";
 
 const Signin = () => {
   const [formData, setFormData] = useState({
     email: "",
     password: "",
   });
-  const [error, setError] = useState(null);
-  const [isLoading, setIsLoading] = useState(false);
-
+  const { loading, error } = useSelector((state) => state.user);
+  // const [error, setError] = useState(null);
+  // const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
+  const dispatch = useDispatch();
 
   const handleChange = (event) => {
     setFormData((prevValues) => ({
@@ -20,7 +27,8 @@ const Signin = () => {
 
   const handleSignInBtn = async (event) => {
     event.preventDefault();
-    setIsLoading(true);
+    // setIsLoading(true);
+    dispatch(signInStart());
 
     try {
       const res = await fetch("/api/auth/signin", {
@@ -36,21 +44,25 @@ const Signin = () => {
       console.log("this is data:", data);
 
       if (data.success === false) {
-        setIsLoading(false);
-        setError(data.message);
+        // setIsLoading(false);
+        // setError(data.message);
+        dispatch(signInFailure(data.message));
         return;
       }
 
-      setIsLoading(false);
-      setError(null);
+      // setIsLoading(false);
+      // setError(null);
+      dispatch(signInSuccess(data));
       navigate("/");
     } catch (error) {
       console.log("this is error:", error);
-      setIsLoading(false);
-      setError(error.message);
-    } finally {
-      setIsLoading(false);
+      // setIsLoading(false);
+      // setError(error.message);
+      dispatch(signInFailure(error.message));
     }
+    // finally {
+    //   setIsLoading(false);
+    // }
   };
 
   // const handleGoogleBtn = (event) => {
@@ -93,10 +105,10 @@ const Signin = () => {
 
         <button
           type="submit"
-          disabled={isLoading}
+          disabled={loading}
           className="bg-slate-700 text-white p-3 rounded-lg uppercase hover:opacity-90 active:opacity-80 disabled:opacity-70 mt-4"
         >
-          {isLoading ? "Loading..." : "Sign In"}
+          {loading ? "Loading..." : "Sign In"}
         </button>
 
         {/* <button
