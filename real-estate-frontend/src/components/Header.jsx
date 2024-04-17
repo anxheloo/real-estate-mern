@@ -2,8 +2,11 @@ import React from "react";
 import { Link } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faMagnifyingGlass } from "@fortawesome/free-solid-svg-icons";
+import { useDispatch, useSelector } from "react-redux";
 
 const Header = () => {
+  const { currentUser } = useSelector((state) => state.user);
+
   return (
     <header className="flex justify-between items-center  flex-wrap bg-slate-200 shadow-md py-3 px-6">
       <Link to={"/"}>
@@ -22,7 +25,7 @@ const Header = () => {
         <FontAwesomeIcon icon={faMagnifyingGlass} className=" text-slate-500" />
       </form>
 
-      <ul className=" flex gap-4 ">
+      <ul className=" flex gap-4 items-center">
         <Link to={"/"}>
           <li className="hidden sm:inline text-slate-700 hover:underline">
             Home
@@ -33,8 +36,16 @@ const Header = () => {
             About
           </li>
         </Link>
-        <Link to={"/sign-in"}>
-          <li className="text-slate-700 hover:underline">Sign in</li>
+        <Link to={currentUser ? "/profile" : "/sign-in"}>
+          {currentUser ? (
+            <img
+              src={currentUser.avatar}
+              alt="profile"
+              className=" w-10 h-10 rounded-full"
+            ></img>
+          ) : (
+            <li className="text-slate-700 hover:underline">Sign in</li>
+          )}
         </Link>
       </ul>
     </header>
