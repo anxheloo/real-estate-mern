@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import {
   signInStart,
@@ -10,10 +10,13 @@ const Profile = () => {
   const dispatch = useDispatch();
   const { currentUser } = useSelector((state) => state.user);
 
+  const imgInputRef = useRef();
+
   const [formData, setFormData] = useState({
     username: "",
     email: "",
     password: "",
+    uploadedImg: null,
   });
 
   const handleChange = (event) => {
@@ -28,10 +31,19 @@ const Profile = () => {
       <h1 className="text-3xl font-semibold text-center my-7 ">Profile</h1>
 
       <form className="flex flex-col gap-3 w-full max-w-[600px] mx-auto p-5 ">
+        <input
+          type="file"
+          ref={imgInputRef}
+          hidden
+          accept="image/*"
+          // className="hidden"
+        ></input>
+
         <img
           src={currentUser.avatar}
-          className=" w-24 h-24 rounded-full mx-auto mb-4 object-cover"
+          className=" w-24 h-24 rounded-full mx-auto mb-4 object-cover cursor-pointer"
           alt="profile"
+          onClick={() => imgInputRef.current.click()}
         ></img>
 
         <input
@@ -81,8 +93,8 @@ const Profile = () => {
       </form>
 
       <div className="flex justify-between items-center w-full max-w-[600px] mx-auto p-5">
-        <h3>Delete Account</h3>
-        <h3>Sign Out</h3>
+        <h3 className="text-red-700 cursor-pointer">Delete Account</h3>
+        <h3 className="text-red-700 cursor-pointer">Sign Out</h3>
       </div>
 
       <h3 className="text-center ">Show listings</h3>
