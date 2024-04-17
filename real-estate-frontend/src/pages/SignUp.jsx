@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
+import OAuth from "../components/OAuth";
 
 const SignUp = () => {
   const [formData, setFormData] = useState({
@@ -111,13 +112,15 @@ const SignUp = () => {
           {isLoading ? "Loading..." : "Sign Up"}
         </button>
 
-        <button
+        {/* <button
           type="text"
           className="bg-slate-700 text-white p-3 rounded-lg uppercase hover:opacity-90 active:opacity-80 disabled:opacity-70"
           onClick={handleGoogleBtn}
         >
           Continue with google
-        </button>
+        </button> */}
+
+        <OAuth></OAuth>
 
         <p className="text-red-600">{error}</p>
       </form>

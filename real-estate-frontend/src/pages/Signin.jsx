@@ -6,6 +6,7 @@ import {
   signInFailure,
   signInSuccess,
 } from "../store/user/userSlice.js";
+import OAuth from "../components/OAuth.jsx";
 
 const Signin = () => {
   const [formData, setFormData] = useState({
@@ -65,11 +66,6 @@ const Signin = () => {
     // }
   };
 
-  // const handleGoogleBtn = (event) => {
-  //   event.preventDefault();
-  //   console.log("form submitted");
-  // };
-
   return (
     <div
       // bg-[#f3f5f2]
@@ -118,6 +114,8 @@ const Signin = () => {
         >
           Continue with google
         </button> */}
+
+        <OAuth></OAuth>
 
         <p className="text-red-600">{error}</p>
       </form>
