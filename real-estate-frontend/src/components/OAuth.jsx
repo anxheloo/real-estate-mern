@@ -35,7 +35,7 @@ const OAuth = () => {
       const data = await res.json();
 
       dispatch(signInSuccess(data));
-      //   navigate("/");
+      navigate("/");
 
       console.log("this is result from google:", result);
     } catch (error) {
