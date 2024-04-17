@@ -35,8 +35,6 @@ const SignOut = () => {
 
       // const res = await axios.post("/api/auth/signup", formData);
       const data = await res.json();
-      // console.log("this is res:", res);
-      // console.log("this is res.data:", res.data);
       console.log("this is data:", data);
 
       if (data.success === false) {
@@ -121,7 +119,7 @@ const SignOut = () => {
           Continue with google
         </button>
 
-        <p>{error}</p>
+        <p className="text-red-600">{error}</p>
       </form>
 
       <h3 className=" w-full max-w-[600px] mx-auto px-5">
