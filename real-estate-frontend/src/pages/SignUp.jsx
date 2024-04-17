@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
 
-const SignOut = () => {
+const SignUp = () => {
   const [formData, setFormData] = useState({
     username: "",
     email: "",
@@ -132,4 +132,4 @@ const SignOut = () => {
   );
 };
 
-export default SignOut;
+export default SignUp;
