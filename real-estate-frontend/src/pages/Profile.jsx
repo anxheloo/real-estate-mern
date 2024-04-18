@@ -7,6 +7,9 @@ import {
   updateUserFailure,
   updateUserStart,
   updateUserSuccess,
+  deleteUserFailure,
+  deleteUserStart,
+  deleteUserSuccess,
 } from "../store/user/userSlice.js";
 
 import {
@@ -104,6 +107,31 @@ const Profile = () => {
     }
   };
 
+  const handleDelete = async () => {
+    try {
+      dispatch(deleteUserStart());
+
+      const res = await fetch(`/api/user/delete/${currentUser._id}`, {
+        method: "DELETE",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+
+      const data = await res.json();
+
+      if (data.success === false) {
+        dispatch(deleteUserFailure(data.message));
+        return;
+      }
+
+      dispatch(deleteUserSuccess());
+    } catch (error) {
+      dispatch(deleteUserFailure(error.message));
+      console.log("This is error.message: ", error.message);
+    }
+  };
+
   return (
     <div>
       <h1 className="text-3xl font-semibold text-center my-7 ">Profile</h1>
@@ -196,7 +224,9 @@ const Profile = () => {
       </form>
 
       <div className="flex justify-between items-center w-full max-w-[600px] mx-auto p-5">
-        <h3 className="text-red-700 cursor-pointer">Delete Account</h3>
+        <h3 className="text-red-700 cursor-pointer" onClick={handleDelete}>
+          Delete Account
+        </h3>
         <h3 className="text-red-700 cursor-pointer">Sign Out</h3>
       </div>
 
