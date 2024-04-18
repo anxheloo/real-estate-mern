@@ -10,6 +10,9 @@ import {
   deleteUserFailure,
   deleteUserStart,
   deleteUserSuccess,
+  signOutUserStart,
+  signOutUserSuccess,
+  signOutUserFailure,
 } from "../store/user/userSlice.js";
 
 import {
@@ -132,6 +135,24 @@ const Profile = () => {
     }
   };
 
+  const handleSignOut = async () => {
+    try {
+      dispatch(signOutUserStart());
+
+      const res = await fetch(`/api/user/signout`);
+      const data = await res.json();
+
+      if (data.success === false) {
+        dispatch(signOutUserFailure(data.message));
+        return;
+      }
+
+      dispatch(signInSuccess());
+    } catch (error) {
+      dispatch(signOutUserFailure(error.message));
+    }
+  };
+
   return (
     <div>
       <h1 className="text-3xl font-semibold text-center my-7 ">Profile</h1>
@@ -227,7 +248,9 @@ const Profile = () => {
         <h3 className="text-red-700 cursor-pointer" onClick={handleDelete}>
           Delete Account
         </h3>
-        <h3 className="text-red-700 cursor-pointer">Sign Out</h3>
+        <h3 className="text-red-700 cursor-pointer" onClick={handleSignOut}>
+          Sign Out
+        </h3>
       </div>
 
       <p className=" text-green-700 w-full max-w-[600px] px-5 mx-auto">
