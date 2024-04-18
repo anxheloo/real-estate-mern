@@ -22,7 +22,7 @@ const Profile = () => {
     username: currentUser.username,
     email: currentUser.email,
     password: "",
-    imageURL: null,
+    avatar: null,
   });
   const [file, setFile] = useState(null);
   const [imagePercentage, setImagePercentage] = useState(0);
@@ -54,7 +54,7 @@ const Profile = () => {
 
       () => {
         getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) =>
-          setFormData({ ...formData, imageURL: downloadURL })
+          setFormData({ ...formData, avatar: downloadURL })
         );
       }
     );
@@ -98,7 +98,7 @@ const Profile = () => {
         ></input>
 
         <img
-          src={file ? formData.imageURL : currentUser.avatar}
+          src={file ? formData.avatar : currentUser.avatar}
           className=" w-24 h-24 rounded-full mx-auto mb-4 object-cover cursor-pointer"
           alt="profile"
           onClick={() => imgInputRef.current.click()}

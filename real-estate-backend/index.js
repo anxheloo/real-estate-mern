@@ -2,6 +2,7 @@ import express from "express";
 import mongoose from "mongoose";
 import userRouter from "./routes/user.route.js";
 import authRouter from "./routes/auth.route.js";
+import cookieParser from "cookie-parser";
 
 //setting up dotenv
 import dotenv from "dotenv";
@@ -16,6 +17,7 @@ mongoose
 
 //We install nodemon and set the script to use nodemon index.js => "dev": "nodemon index.js",  "start": "node index.js" => for deployment
 const app = express();
+app.use(cookieParser());
 
 //middleware
 app.use(express.json());
