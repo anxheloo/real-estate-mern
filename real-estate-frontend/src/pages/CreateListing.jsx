@@ -1,7 +1,96 @@
-import React, { useState } from "react";
+import {
+  getDownloadURL,
+  getStorage,
+  ref,
+  uploadBytesResumable,
+} from "firebase/storage";
+import React, { useState, useRef } from "react";
+import { app } from "../firebase";
 
 const CreateListing = () => {
   const [offerChecked, setOfferChecked] = useState(false);
+  const [files, setFiles] = useState([]);
+  const [formData, setFormData] = useState({
+    imageUrls: [],
+  });
+  const [imageUploadError, setImageUploadError] = useState(false);
+  const [imagePercentage, setImagePercentage] = useState(0);
+  const [isUploading, setIsUploading] = useState(false);
+  const filesRef = useRef();
+
+  console.log("This is formData :", formData);
+
+  const handleImageSubmit = () => {
+    setIsUploading(true);
+    setImagePercentage(0);
+
+    if (files.length > 0 && files.length + formData.imageUrls.length < 7) {
+      const promises = [];
+
+      for (let i = 0; i < files.length; i++) {
+        promises.push(storeImage(files[i]));
+      }
+
+      Promise.all(promises)
+        .then((url) => {
+          console.log("This is urls:", url);
+          setFormData({
+            ...formData,
+            imageUrls: formData.imageUrls.concat(url),
+          });
+
+          setIsUploading(false);
+          setImageUploadError(false);
+        })
+        .catch((error) => {
+          setIsUploading(false);
+          setImageUploadError("Image upload failed (2 mb max per image)");
+          console.log("This is error: ", error);
+        });
+    } else {
+      setImageUploadError("You can only upload 6 images per listing!");
+      setIsUploading(false);
+      alert("Maximum images must be 6");
+      setFiles([]);
+      filesRef.current.value = "";
+    }
+  };
+
+  const storeImage = async (file) => {
+    return new Promise((resolve, reject) => {
+      const storage = getStorage(app);
+      const fileName = new Date().getTime() + file.name;
+      const storageRef = ref(storage, fileName);
+      const uploadTask = uploadBytesResumable(storageRef, file);
+      uploadTask.on(
+        "state_changed",
+        (snapshot) => {
+          const progress =
+            (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+          console.log(`Upload is ${Math.round(progress)}% done`);
+          setImagePercentage(Math.round(progress));
+        },
+
+        (error) => {
+          reject(error);
+        },
+        () => {
+          getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
+            resolve(downloadURL);
+          });
+        }
+      );
+    });
+  };
+
+  const removeSelectedImage = (deletedIndex) => {
+    setFormData({
+      ...formData,
+      imageUrls: formData.imageUrls.filter(
+        (item, index) => item[index] !== item[deletedIndex]
+      ),
+    });
+  };
 
   return (
     <main className="p-3 max-w-4xl mx-auto">
@@ -166,14 +255,49 @@ const CreateListing = () => {
               id="images"
               multiple
               className="p-3 border border-gray-300 rounded w-full"
+              onChange={(event) => setFiles(event.target.files)}
+              ref={filesRef}
             ></input>
+
             <button
-              className="p-3 text-green-700 border border-green-700 rounded uppercase hover:shadow-lg active:opacity-85 disabled:opacity-80"
+              disabled={isUploading}
+              className="p-3 text-green-700 border border-green-700 rounded uppercase hover:shadow-lg active:opacity-85 disabled:opacity-60"
               type="button"
+              onClick={handleImageSubmit}
             >
-              Upload
+              {!isUploading ? "Upload" : "Uploading..."}
             </button>
           </div>
+
+          <input
+            type="range"
+            min={0}
+            max={100}
+            value={imagePercentage}
+            onChange={() => setImagePercentage(imagePercentage)}
+          ></input>
+          <p className="text-red-700">{imageUploadError && imageUploadError}</p>
+
+          {formData.imageUrls.length > 0 &&
+            formData.imageUrls.map((item, index) => (
+              <div
+                key={index}
+                className="p-3 flex justify-between items-center border border-gray-300"
+              >
+                <img
+                  src={item}
+                  alt="listing image"
+                  className="w-20 h-20 object-contain rounded-lg"
+                ></img>
+                <button
+                  className="p-3 text-red-700 rounded-lg uppercase hover:opacity-75"
+                  type="button"
+                  onClick={() => removeSelectedImage(index)}
+                >
+                  Delete
+                </button>
+              </div>
+            ))}
 
           <button
             className="uppercase w-full rounded-lg p-3 bg-slate-700 text-white hover:opacity-90 disabled:opacity-80 mt-4"

@@ -169,9 +169,9 @@ const Profile = () => {
           // onChange={handleChange}
           onChange={(event) => setFile(event.target.files[0])}
         ></input>
-        {/* file ? formData?.avatar : */}
+
         <img
-          src={(file && formData?.avatar) || currentUser?.avatar}
+          src={file ? formData?.avatar : currentUser?.avatar}
           className=" w-24 h-24 rounded-full mx-auto mb-4 object-cover cursor-pointer"
           alt="profile"
           onClick={() => imgInputRef.current.click()}
