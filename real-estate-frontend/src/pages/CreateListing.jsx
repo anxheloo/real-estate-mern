@@ -7,8 +7,11 @@ import {
 import React, { useState, useRef } from "react";
 import { app } from "../firebase";
 import { useSelector } from "react-redux";
+import { useNavigate } from "react-router-dom";
 
 const CreateListing = () => {
+  const navigate = useNavigate();
+
   const { currentUser } = useSelector((state) => state.user);
   const [files, setFiles] = useState([]);
   const [formData, setFormData] = useState({
@@ -159,12 +162,15 @@ const CreateListing = () => {
         body: JSON.stringify({ ...formData, userRef: currentUser._id }),
       });
 
-      const data = res.json();
+      const data = await res.json();
+      console.log("This is data: ", data);
       setLoading(false);
 
       if (data.success === false) {
         setError(data.message);
       }
+
+      navigate(`/listing/${data._id}`);
     } catch (error) {
       setError(error.message);
       setLoading(false);

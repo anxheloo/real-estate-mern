@@ -7,11 +7,14 @@ export const createListing = async (req, res, next) => {
   console.log("This is req.body: ", req.body);
 
   try {
-    const listing = await Listing.create(req.body);
+    const newListing = new Listing(req.body);
+    await newListing.save();
 
-    console.log("This is listing:", listing);
+    // const listing = await Listing.create(req.body);
 
-    return res.status(201).json(listing);
+    console.log("This is listing:", newListing);
+
+    return res.status(201).json(newListing);
   } catch (error) {
     // res.status(400).json({ error: error.message });
     next(error);
