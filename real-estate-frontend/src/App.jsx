@@ -2,6 +2,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { Profile, SignUp, Home, About, Signin } from "./pages/index";
 import Header from "./components/Header";
 import PrivateRoute from "./components/PrivateRoute";
+import CreateListing from "./pages/CreateListing";
 
 function App() {
   return (
@@ -14,7 +15,11 @@ function App() {
         <Route path="sign-up" element={<SignUp></SignUp>} />
         <Route path="about-us" element={<About></About>} />
         <Route element={<PrivateRoute></PrivateRoute>}>
-          <Route path="profile" element={<Profile></Profile>} />
+          <Route path="/profile" element={<Profile></Profile>} />
+          <Route
+            path="/create-listing"
+            element={<CreateListing></CreateListing>}
+          />
         </Route>
       </Routes>
     </BrowserRouter>

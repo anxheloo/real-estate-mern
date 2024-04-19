@@ -1,9 +1,7 @@
 import React, { useState, useRef, useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
+import { Link } from "react-router-dom";
 import {
-  signInStart,
-  signInFailure,
-  signInSuccess,
   updateUserFailure,
   updateUserStart,
   updateUserSuccess,
@@ -147,7 +145,7 @@ const Profile = () => {
         return;
       }
 
-      dispatch(signInSuccess());
+      dispatch(signOutUserSuccess());
     } catch (error) {
       dispatch(signOutUserFailure(error.message));
     }
@@ -171,14 +169,13 @@ const Profile = () => {
           // onChange={handleChange}
           onChange={(event) => setFile(event.target.files[0])}
         ></input>
-
+        {/* file ? formData?.avatar : */}
         <img
-          src={file ? formData?.avatar : currentUser?.avatar}
+          src={(file && formData?.avatar) || currentUser?.avatar}
           className=" w-24 h-24 rounded-full mx-auto mb-4 object-cover cursor-pointer"
           alt="profile"
           onClick={() => imgInputRef.current.click()}
         ></img>
-
         <input
           type="range"
           min={0}
@@ -186,7 +183,6 @@ const Profile = () => {
           value={imagePercentage}
           onChange={() => setImagePercentage(imagePercentage)}
         ></input>
-
         <p>
           {imageError ? (
             <span className="text-red-700">
@@ -200,7 +196,6 @@ const Profile = () => {
             ""
           )}
         </p>
-
         <input
           id="username"
           className="border p-3 rounded-lg outline-none"
@@ -227,7 +222,6 @@ const Profile = () => {
           placeholder="Password"
           onChange={handleChange}
         ></input>
-
         <button
           disabled={loading}
           type="submit"
@@ -235,13 +229,12 @@ const Profile = () => {
         >
           {loading ? "Loading..." : "UPDATE"}
         </button>
-
-        <button
-          type="button"
-          className="bg-[#116831] text-white p-3 rounded-lg uppercase hover:opacity-90 active:opacity-80 disabled:opacity-70"
+        <Link
+          to={"/create-listing"}
+          className="bg-[#116831] text-white p-3 text-center rounded-lg uppercase hover:opacity-90 active:opacity-80 disabled:opacity-70"
         >
           CREATE LISTING
-        </button>
+        </Link>
       </form>
 
       <div className="flex justify-between items-center w-full max-w-[600px] mx-auto p-5">
