@@ -22,3 +22,18 @@ export const createListing = async (req, res, next) => {
     // next(errorHandler(550, "error from the function"));
   }
 };
+
+export const getAllListings = async (req, res, next) => {
+  try {
+    if (req.user.id !== req.params.id)
+      return next(errorHandler(401, "You can only show your own listings!"));
+
+    const listings = await Listing.find({ userRef: req.params.id });
+    return res.status(200).json(listings);
+  } catch (error) {
+    // res.status(400).json({ error: error.message });
+    next(error);
+    console.log(error);
+    // next(errorHandler(550, "error from the function"));
+  }
+};
