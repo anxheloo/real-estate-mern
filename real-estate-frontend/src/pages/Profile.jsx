@@ -194,6 +194,12 @@ const Profile = () => {
         return;
       }
 
+      // Using filter instead of refeatching using showListings();
+      // setUserListings(userListings.filter((item) => item._id !== id));
+      // setUserListings((prevListings) =>
+      //   prevListings.filter((item) => item._id !== id)
+      // );
+
       showListings();
     } catch (error) {
       setDeleteListError(error.message);
