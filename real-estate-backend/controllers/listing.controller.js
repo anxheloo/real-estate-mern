@@ -37,3 +37,18 @@ export const getAllListings = async (req, res, next) => {
     // next(errorHandler(550, "error from the function"));
   }
 };
+
+export const deleteListing = async (req, res, next) => {
+  if (req.user.id !== req.params.id)
+    return next(errorHandler(401, "You can only delete your own listings!"));
+
+  try {
+    const listingId = req.query.listingId;
+
+    await Listing.findByIdAndDelete(listingId);
+
+    res.status(200).json("List successfully deleted!");
+  } catch (error) {
+    next(error);
+  }
+};

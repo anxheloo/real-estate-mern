@@ -30,8 +30,12 @@ const Profile = () => {
   const [imagePercentage, setImagePercentage] = useState(0);
   const [imageError, setImageError] = useState(false);
   const [updateSuccess, setUpdateSuccess] = useState(false);
+  const [userListings, setUserListings] = useState(null);
+  const [showListingsError, setShowListingsError] = useState();
+  const [deleteListError, setDeleteListError] = useState();
 
   console.log(formData);
+  console.log("This is userListings userListings:", userListings);
 
   useEffect(() => {
     if (file) {
@@ -151,8 +155,57 @@ const Profile = () => {
     }
   };
 
+  const showListings = async () => {
+    setShowListingsError(false);
+
+    try {
+      const res = await fetch(`/api/listing/listings/${currentUser._id}`);
+      const data = await res.json();
+
+      if (data.success === false) {
+        setShowListingsError(true);
+        return;
+      }
+
+      setUserListings(data);
+
+      console.log("This is userListings from data:", data);
+    } catch (error) {
+      setShowListingsError(true);
+      console.log("THis is error:", error);
+    }
+  };
+
+  const deleteList = async (item) => {
+    setDeleteListError("");
+
+    try {
+      const res = await fetch(
+        `/api/listing/delete/${currentUser._id}?listingId=${item._id}`,
+        {
+          method: "DELETE",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
+
+      const data = await res.json();
+
+      if (data.success === false) {
+        setDeleteListError(data.message);
+        return;
+      }
+
+      showListings();
+    } catch (error) {
+      setDeleteListError(error.message);
+      console.log(error);
+    }
+  };
+
   return (
-    <div>
+    <div className="mb-10">
       <h1 className="text-3xl font-semibold text-center my-7 ">Profile</h1>
 
       <form
@@ -251,7 +304,54 @@ const Profile = () => {
       </p>
       <p className=" text-red-700 mt-5">{error ? error : ""}</p>
 
-      <h3 className="text-center cursor-pointer">Show listings</h3>
+      <h3 className="text-center cursor-pointer mb-7" onClick={showListings}>
+        Show listings
+      </h3>
+
+      {userListings?.length > 0 && (
+        <h1 className="mx-aut text-center font-semibold text-xl p-5">
+          Your listings
+        </h1>
+      )}
+
+      {userListings?.length > 0
+        ? userListings.map((item, index) => (
+            <div
+              key={index}
+              className="flex justify-between items-center w-full max-w-[600px] mx-auto p-5 border rounded"
+            >
+              <Link
+                className="flex flex-1 gap-2 items-center truncate "
+                to={`listing/${item._id}`}
+              >
+                <img
+                  src={item.imageUrls[0]}
+                  alt="listing cover"
+                  className=" object-contain h-16 w-16 rounded-lg"
+                ></img>
+                <h2>{item.name}</h2>
+              </Link>
+
+              <div className="flex flex-col">
+                <button
+                  type="text"
+                  className="text-red-700 active:opacity-80"
+                  onClick={() => deleteList(item)}
+                >
+                  DELETE
+                </button>
+                <button
+                  type="text"
+                  className="text-green-600 active:opacity-80"
+                >
+                  EDIT
+                </button>
+              </div>
+            </div>
+          ))
+        : userListings?.length === 0 && <p>There are no listings created!</p>}
+
+      {deleteListError !== 0 && <p>{deleteListError}</p>}
     </div>
   );
 };
