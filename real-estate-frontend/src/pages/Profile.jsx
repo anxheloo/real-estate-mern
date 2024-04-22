@@ -159,7 +159,7 @@ const Profile = () => {
     setShowListingsError(false);
 
     try {
-      const res = await fetch(`/api/listing/listings/${currentUser._id}`);
+      const res = await fetch(`/api/listing/${currentUser._id}`);
       const data = await res.json();
 
       if (data.success === false) {
@@ -176,19 +176,16 @@ const Profile = () => {
     }
   };
 
-  const deleteList = async (item) => {
+  const deleteList = async (id) => {
     setDeleteListError("");
 
     try {
-      const res = await fetch(
-        `/api/listing/delete/${currentUser._id}?listingId=${item._id}`,
-        {
-          method: "DELETE",
-          headers: {
-            "Content-Type": "application/json",
-          },
-        }
-      );
+      const res = await fetch(`/api/listing/delete/${id}`, {
+        method: "DELETE",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
 
       const data = await res.json();
 
@@ -336,7 +333,7 @@ const Profile = () => {
                 <button
                   type="text"
                   className="text-red-700 active:opacity-80"
-                  onClick={() => deleteList(item)}
+                  onClick={() => deleteList(item._id)}
                 >
                   DELETE
                 </button>
