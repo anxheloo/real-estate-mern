@@ -20,6 +20,10 @@ function App() {
             path="/create-listing"
             element={<CreateListing></CreateListing>}
           />
+          <Route
+            path="/edit-listing/:id"
+            element={<CreateListing></CreateListing>}
+          />
         </Route>
       </Routes>
     </BrowserRouter>

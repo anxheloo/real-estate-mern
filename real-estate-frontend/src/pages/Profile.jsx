@@ -12,6 +12,7 @@ import {
   signOutUserSuccess,
   signOutUserFailure,
 } from "../store/user/userSlice.js";
+import { useNavigate } from "react-router-dom";
 
 import {
   getDownloadURL,
@@ -22,6 +23,7 @@ import {
 import { app } from "../firebase.js";
 
 const Profile = () => {
+  const navigate = useNavigate();
   const dispatch = useDispatch();
   const { currentUser, loading, error } = useSelector((state) => state.user);
   const imgInputRef = useRef();
@@ -207,6 +209,10 @@ const Profile = () => {
     }
   };
 
+  const editListing = (id) => {
+    navigate(`/edit-listing/${id}`);
+  };
+
   return (
     <div className="mb-10">
       <h1 className="text-3xl font-semibold text-center my-7 ">Profile</h1>
@@ -346,6 +352,7 @@ const Profile = () => {
                 <button
                   type="text"
                   className="text-green-600 active:opacity-80"
+                  onClick={() => editListing(item._id)}
                 >
                   EDIT
                 </button>
