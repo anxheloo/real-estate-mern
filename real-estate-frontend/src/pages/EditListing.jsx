@@ -41,7 +41,6 @@ const EditListing = () => {
   // console.log("This is formData :", formData);
   console.log("this is location.pathname:", listingId);
   console.log("this is params from useParams():", params.id);
-
   console.log("this is formData:", formData);
 
   const handleImageSubmit = () => {
@@ -202,7 +201,8 @@ const EditListing = () => {
         const data = await res.json();
 
         if (data.success === false) {
-          setError(data.message);
+          setLoading(false);
+          return setError(data.message);
         }
 
         console.log("this is data:", data);
