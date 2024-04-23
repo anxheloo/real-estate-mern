@@ -81,3 +81,22 @@ export const updateListing = async (req, res, next) => {
     // next(errorHandler(550, "error from the function"));
   }
 };
+
+export const getListingById = async (req, res, next) => {
+  const { id } = req.params;
+
+  try {
+    const listing = await Listing.findById(id);
+
+    if (!listing) {
+      return next(errorHandler(404, " Listing not found"));
+    }
+
+    return res.status(200).json(listing);
+  } catch (error) {
+    // res.status(400).json({ error: error.message });
+    next(error);
+    console.log(error);
+    // next(errorHandler(550, "error from the function"));
+  }
+};

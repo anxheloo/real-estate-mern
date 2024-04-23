@@ -3,6 +3,7 @@ import { Profile, SignUp, Home, About, Signin } from "./pages/index";
 import Header from "./components/Header";
 import PrivateRoute from "./components/PrivateRoute";
 import CreateListing from "./pages/CreateListing";
+import EditListing from "./pages/EditListing";
 
 function App() {
   return (
@@ -21,8 +22,8 @@ function App() {
             element={<CreateListing></CreateListing>}
           />
           <Route
-            path="/edit-listing/:id"
-            element={<CreateListing></CreateListing>}
+            path="/update-listing/:id"
+            element={<EditListing></EditListing>}
           />
         </Route>
       </Routes>

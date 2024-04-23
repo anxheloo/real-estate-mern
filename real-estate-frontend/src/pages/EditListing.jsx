@@ -4,13 +4,17 @@ import {
   ref,
   uploadBytesResumable,
 } from "firebase/storage";
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import { app } from "../firebase";
 import { useSelector } from "react-redux";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation, useParams } from "react-router-dom";
 
 const EditListing = () => {
   const navigate = useNavigate();
+  // we can use useLocation() to get params or use useParams()
+  const location = useLocation();
+  const params = useParams();
+  const listingId = location.pathname.split("/")[2];
   const { currentUser } = useSelector((state) => state.user);
   const [files, setFiles] = useState([]);
   const [formData, setFormData] = useState({
@@ -34,7 +38,11 @@ const EditListing = () => {
   const [isUploading, setIsUploading] = useState(false);
   const filesRef = useRef();
 
-  console.log("This is formData :", formData);
+  // console.log("This is formData :", formData);
+  console.log("this is location.pathname:", listingId);
+  console.log("this is params from useParams():", params.id);
+
+  console.log("this is formData:", formData);
 
   const handleImageSubmit = () => {
     setIsUploading(true);
@@ -142,20 +150,24 @@ const EditListing = () => {
     }
   };
 
-  const handleSubmit = async (event) => {
+  const handleUpdate = async (event) => {
     event.preventDefault();
 
     try {
-      if (formData.imageUrls.length < 1)
-        return setError("You must upload at least 1 image!");
-
-      if (formData.regularPrice < formData.discountPrice)
-        return setError("Discount price must be lower than regular price!");
-
       setLoading(true);
       setError(false);
 
-      const res = await fetch("/api/listing/create", {
+      if (formData.imageUrls.length < 1) {
+        setLoading(false);
+        return setError("You must upload at least 1 image!");
+      }
+
+      if (formData.regularPrice < formData.discountPrice) {
+        setLoading(false);
+        return setError("Discount price must be lower than regular price!");
+      }
+
+      const res = await fetch(`/api/listing/update/${listingId}`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ ...formData, userRef: currentUser._id }),
@@ -163,11 +175,13 @@ const EditListing = () => {
 
       const data = await res.json();
       console.log("This is data: ", data);
-      setLoading(false);
 
       if (data.success === false) {
-        setError(data.message);
+        setLoading(false);
+        return setError(data.message);
       }
+
+      setLoading(false);
 
       navigate(`/listing/${data._id}`);
     } catch (error) {
@@ -176,13 +190,37 @@ const EditListing = () => {
     }
   };
 
+  useEffect(() => {
+    const fetchListingBasedOnId = async () => {
+      setLoading(true);
+      setError(false);
+
+      try {
+        const res = await fetch(`/api/listing/get/${listingId}`, {
+          headers: { "Content-Type": "application/json" },
+        });
+        const data = await res.json();
+
+        if (data.success === false) {
+          setError(data.message);
+        }
+
+        console.log("this is data:", data);
+        setFormData(data);
+        setLoading(false);
+      } catch (error) {
+        setError(error.message);
+      }
+    };
+
+    fetchListingBasedOnId();
+  }, [listingId]);
+
   return (
     <main className="p-3 max-w-4xl mx-auto">
-      <h1 className="text-3xl font-semibold text-center my-7">
-        Create a Listing
-      </h1>
+      <h1 className="text-3xl font-semibold text-center my-7">Edit Listing</h1>
 
-      <form onSubmit={handleSubmit} className="flex flex-col sm:flex-row gap-4">
+      <form onSubmit={handleUpdate} className="flex flex-col sm:flex-row gap-4">
         <div className="flex flex-col gap-4 flex-1">
           <input
             type="text"
@@ -414,7 +452,7 @@ const EditListing = () => {
             className="uppercase w-full rounded-lg p-3 bg-slate-700 text-white hover:opacity-90 disabled:opacity-80 mt-4"
             type="submit"
           >
-            {loading ? "Creating..." : "Create Listing"}
+            {loading ? "Updating..." : "Update Listing"}
           </button>
 
           {error && <p className="text-red-700 text-sm">{error}</p>}
