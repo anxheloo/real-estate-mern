@@ -16,6 +16,7 @@ import {
   faBath,
   faSquareParking,
   faCouch,
+  faShare,
 } from "@fortawesome/free-solid-svg-icons";
 
 const Listing = () => {
@@ -28,6 +29,9 @@ const Listing = () => {
   const location = useLocation();
   const params = useParams();
   const listingId = location.pathname.split("/")[2];
+
+  const [copied, setCopied] = useState(false);
+  const [contact, setContact] = useState(false);
 
   console.log("This is listingId:", listingId);
   console.log("This is formData:", formData);
@@ -86,7 +90,26 @@ const Listing = () => {
         </div>
       )}
 
-      <div className="p-5">
+      <div className="fixed top-[13%] right-[3%] z-10 border rounded-full w-12 h-12 flex justify-center items-center bg-slate-100 cursor-pointer">
+        <FontAwesomeIcon
+          icon={faShare}
+          className="text-slate-500"
+          onClick={() => {
+            navigator.clipboard.writeText(window.location.href);
+            setCopied(true);
+            setTimeout(() => {
+              setCopied(false);
+            }, 2000);
+          }}
+        />
+      </div>
+      {copied && (
+        <p className="fixed top-[23%] right-[5%] z-10 rounded-md bg-slate-100 p-2">
+          Link copied!
+        </p>
+      )}
+
+      <div className="flex flex-col max-w-4xl mx-auto p-5 my-7 gap-4">
         <p className="text-black text-[25px] font-semibold mt-6">
           {formData?.name} - $ {formData?.discountPrice}
           {formData?.type === "rent" && " / month"}
