@@ -134,7 +134,8 @@ const Listing = () => {
 
           {formData?.offer && (
             <p className="bg-green-900 w-full max-w-[200px] text-white text-center p-1 rounded-md cursor-pointer">
-              ${+formData?.regularPrice - +formData?.discountPrice} discount
+              {/* ${+formData?.regularPrice - +formData?.discountPrice} discount */}
+              ${+formData?.discountPrice} discount
             </p>
           )}
         </div>
@@ -172,14 +173,6 @@ const Listing = () => {
 
         {currentUser &&
           formData?.userRef !== currentUser._id &&
-          //   <button
-          //     type="button"
-          //     className="w-full bg-slate-700 text-white rounded-md p-3 hover:opacity-85 active:opacity-80"
-          //     onClick={() => setContact(false)}
-          //   >
-          //     Contact Landlord
-          //   </button>
-
           (contact ? (
             <button
               type="button"
