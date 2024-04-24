@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { useLocation, useParams } from "react-router-dom";
 import { Swiper, SwiperSlide } from "swiper/react";
 import SwiperCore from "swiper";
@@ -18,9 +18,15 @@ import {
   faCouch,
   faShare,
 } from "@fortawesome/free-solid-svg-icons";
+import { useSelector, useDispatch } from "react-redux";
+
+import Contact from "../components/Contact";
 
 const Listing = () => {
   //   SwiperCore.use([Navigation]);
+
+  const dispatch = useDispatch();
+  const { currentUser } = useSelector((state) => state.user);
 
   const [formData, setFormData] = useState(null);
   const [error, setError] = useState(false);
@@ -31,7 +37,7 @@ const Listing = () => {
   const listingId = location.pathname.split("/")[2];
 
   const [copied, setCopied] = useState(false);
-  const [contact, setContact] = useState(false);
+  const [contact, setContact] = useState(true);
 
   console.log("This is listingId:", listingId);
   console.log("This is formData:", formData);
@@ -58,6 +64,7 @@ const Listing = () => {
         setLoading(false);
       } catch (error) {
         setError(error.message);
+        setLoading(false);
       }
     };
 
@@ -65,7 +72,7 @@ const Listing = () => {
   }, [params.id]);
 
   return (
-    <div className="w-full">
+    <div className="w-full ">
       {formData && !loading && !error && (
         <div>
           <Swiper
@@ -90,7 +97,7 @@ const Listing = () => {
         </div>
       )}
 
-      <div className="fixed top-[13%] right-[3%] z-10 border rounded-full w-12 h-12 flex justify-center items-center bg-slate-100 cursor-pointer">
+      <div className="fixed top-[13%] right-[3%] z-10 border rounded-full w-12 h-12 flex justify-center items-center bg-slate-100 cursor-pointer shadow-md">
         <FontAwesomeIcon
           icon={faShare}
           className="text-slate-500"
@@ -109,9 +116,9 @@ const Listing = () => {
         </p>
       )}
 
-      <div className="flex flex-col max-w-4xl mx-auto p-5 my-7 gap-4">
+      <div className="flex flex-col max-w-4xl mx-auto p-5 my-7 gap-4 ">
         <p className="text-black text-[25px] font-semibold mt-6">
-          {formData?.name} - $ {formData?.discountPrice}
+          {formData?.name} - $ {formData?.regularPrice}
           {formData?.type === "rent" && " / month"}
         </p>
 
@@ -127,7 +134,7 @@ const Listing = () => {
 
           {formData?.offer && (
             <p className="bg-green-900 w-full max-w-[200px] text-white text-center p-1 rounded-md cursor-pointer">
-              ${+formData?.regularPrice - +formData?.discountPrice}
+              ${+formData?.regularPrice - +formData?.discountPrice} discount
             </p>
           )}
         </div>
@@ -162,6 +169,29 @@ const Listing = () => {
             {formData?.parking ? "Furnished " : "Unfurnished"}
           </li>
         </ul>
+
+        {currentUser &&
+          formData?.userRef !== currentUser._id &&
+          //   <button
+          //     type="button"
+          //     className="w-full bg-slate-700 text-white rounded-md p-3 hover:opacity-85 active:opacity-80"
+          //     onClick={() => setContact(false)}
+          //   >
+          //     Contact Landlord
+          //   </button>
+
+          (contact ? (
+            <button
+              type="button"
+              className="w-full bg-slate-700 text-white rounded-md p-3 hover:opacity-85 active:opacity-80"
+              //   className={`w-full bg-slate-700 text-white rounded-md p-3 hover:opacity-85 active:opacity-80 `}
+              onClick={() => setContact(false)}
+            >
+              Contact Landlord
+            </button>
+          ) : (
+            <Contact setContact={setContact} formData={formData}></Contact>
+          ))}
       </div>
     </div>
   );
