@@ -1,11 +1,49 @@
-import React from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import { Link } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faMagnifyingGlass } from "@fortawesome/free-solid-svg-icons";
 import { useDispatch, useSelector } from "react-redux";
+import { useNavigate } from "react-router-dom";
 
 const Header = () => {
+  const navigate = useNavigate();
   const { currentUser } = useSelector((state) => state.user);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
+  const [searchDatas, setSearchDatas] = useState(null);
+
+  const handleSearch = async (event) => {
+    event.preventDefault();
+
+    setLoading(true);
+    setError(false);
+
+    try {
+      const res = await fetch(`/api/listing/search?searchTerm=${searchTerm}`, {
+        headers: { "Content-Type": "application/json" },
+      });
+
+      navigate(`/api/listing/search?searchTerm=${searchTerm}`);
+      // const data = await res.json();
+
+      // if (data.success === false) {
+      //   setLoading(false);
+      //   return setError(data.message);
+      // }
+
+      // console.log("this is data:", data);
+      // setSearchDatas(data);
+      // setLoading(false);
+    } catch (error) {
+      setError(error.message);
+      setLoading(false);
+    }
+  };
+
+  // useEffect(() => {
+  //   handleSearch(event);
+  // }, [searchTerm]);
 
   return (
     <header className="flex justify-between items-center  flex-wrap bg-slate-200 shadow-md py-3 px-6">
@@ -16,13 +54,23 @@ const Header = () => {
         </h1>
       </Link>
 
-      <form className="bg-slate-100 p-3 rounded-lg flex items-center">
+      <form
+        onSubmit={handleSearch}
+        className="bg-slate-100 p-3 rounded-lg flex items-center"
+      >
         <input
           type="text"
           placeholder="Search..."
           className=" bg-transparent outline-none w-24 sm:w-64"
+          value={searchTerm}
+          onChange={(event) => setSearchTerm(event.target.value)}
         ></input>
-        <FontAwesomeIcon icon={faMagnifyingGlass} className=" text-slate-500" />
+        <button type="submit">
+          <FontAwesomeIcon
+            icon={faMagnifyingGlass}
+            className=" text-slate-500 active:opacity-70"
+          />
+        </button>
       </form>
 
       <ul className=" flex gap-4 items-center">
