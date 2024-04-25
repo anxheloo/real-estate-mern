@@ -24,7 +24,7 @@ const Header = () => {
         headers: { "Content-Type": "application/json" },
       });
 
-      navigate(`/api/listing/search?searchTerm=${searchTerm}`);
+      navigate(`/search?searchTerm=${searchTerm}`);
       // const data = await res.json();
 
       // if (data.success === false) {
