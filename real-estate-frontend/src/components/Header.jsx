@@ -1,49 +1,37 @@
-import React, { useEffect, useState, useCallback } from "react";
+import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faMagnifyingGlass } from "@fortawesome/free-solid-svg-icons";
-import { useDispatch, useSelector } from "react-redux";
+import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 
 const Header = () => {
   const navigate = useNavigate();
   const { currentUser } = useSelector((state) => state.user);
   const [searchTerm, setSearchTerm] = useState("");
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(null);
-  const [searchDatas, setSearchDatas] = useState(null);
 
-  const handleSearch = async (event) => {
+  const handleSubmit = async (event) => {
     event.preventDefault();
 
-    setLoading(true);
-    setError(false);
+    console.log("this is window.locaiton.search: ", window.location.search);
+    console.log("this is locaiton.search: ", location.search);
 
-    try {
-      const res = await fetch(`/api/listing/search?searchTerm=${searchTerm}`, {
-        headers: { "Content-Type": "application/json" },
-      });
+    // const urlParams = new URLSearchParams(window.location.search);
+    const urlParams = new URLSearchParams(location.search);
+    urlParams.set("searchTerm", searchTerm);
+    const searchQuery = urlParams.toString();
 
-      navigate(`/search?searchTerm=${searchTerm}`);
-      // const data = await res.json();
-
-      // if (data.success === false) {
-      //   setLoading(false);
-      //   return setError(data.message);
-      // }
-
-      // console.log("this is data:", data);
-      // setSearchDatas(data);
-      // setLoading(false);
-    } catch (error) {
-      setError(error.message);
-      setLoading(false);
-    }
+    navigate(`/search?${searchQuery}`);
   };
 
-  // useEffect(() => {
-  //   handleSearch(event);
-  // }, [searchTerm]);
+  useEffect(() => {
+    const urlParams = new URLSearchParams(location.search);
+    const searchTermFromUrl = urlParams.get("searchTerm");
+
+    if (searchTermFromUrl) {
+      setSearchTerm(searchTermFromUrl);
+    }
+  }, [location.search]);
 
   return (
     <header className="flex justify-between items-center  flex-wrap bg-slate-200 shadow-md py-3 px-6">
@@ -55,7 +43,7 @@ const Header = () => {
       </Link>
 
       <form
-        onSubmit={handleSearch}
+        onSubmit={handleSubmit}
         className="bg-slate-100 p-3 rounded-lg flex items-center"
       >
         <input
