@@ -16,6 +16,7 @@ const Search = () => {
   const [searchDatas, setSearchDatas] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+  const [showMore, setShowMore] = useState(false);
 
   console.log("SideBarData: ", sideBarDatas);
   console.log("location: ", location.search);
@@ -119,17 +120,42 @@ const Search = () => {
     const fetchDatas = async () => {
       setLoading(true);
       setError(null);
+      setShowMore(false);
 
       const searchQuery = urlParams.toString();
       console.log("searchQuery", searchQuery);
       const res = await fetch(`/api/listing/search?${searchQuery}`);
       const data = await res.json();
+
+      if (data.length > 8) {
+        setShowMore(true);
+      } else {
+        setShowMore(false);
+      }
+
       setSearchDatas(data);
       setLoading(false);
     };
 
     fetchDatas();
   }, [location.search]);
+
+  const onShowMoreClick = async () => {
+    const numberOfListings = searchDatas?.length;
+    const startIndex = numberOfListings;
+    const urlParams = new URLSearchParams(location.search);
+    urlParams.set("startIndex", startIndex);
+    const searchQuery = urlParams.toString();
+
+    const res = await fetch(`/api/listing/search?${searchQuery}`);
+    const data = await res.json();
+
+    if (data.length < 9) {
+      setShowMore(false);
+    }
+
+    setSearchDatas([...searchDatas, ...data]);
+  };
 
   return (
     <div className="flex flex-col md:flex-row ">
@@ -255,12 +281,12 @@ const Search = () => {
         </form>
       </div>
 
-      <div className="w-full">
+      <div className="w-full ">
         <h1 className="text-3xl font-semibold border-b p-5 text-slate-700 ">
           Listing Results :
         </h1>
 
-        <div className="p-7 flex flex-wrap gap-4">
+        <div className="p-7 flex flex-wrap gap-4 ">
           {searchDatas && searchDatas.length > 0 ? (
             searchDatas.map((item, index) => (
               <ListingItem key={item._id} item={item}></ListingItem>
@@ -269,6 +295,18 @@ const Search = () => {
             <p className="text-xl text-center text-slate-700">
               There are no listings matching your search criteria
             </p>
+          )}
+        </div>
+
+        <div className="text-center">
+          {showMore && (
+            <button
+              onClick={onShowMoreClick}
+              type="text"
+              className=" text-green-700 hover:opacity-80 hover:underline p-7  "
+            >
+              Show more
+            </button>
           )}
         </div>
       </div>
