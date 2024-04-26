@@ -321,9 +321,10 @@ const Profile = () => {
               key={index}
               className="flex justify-between items-center w-full max-w-[600px] mx-auto p-5 border rounded"
             >
-              <Link
+              <a
                 className="flex flex-1 gap-2 items-center truncate "
-                to={`listing/${item._id}`}
+                // to={`listing/${item._id}`}
+                href={`listing/${item._id}`}
               >
                 <img
                   src={item.imageUrls[0]}
@@ -331,7 +332,7 @@ const Profile = () => {
                   className=" object-contain h-16 w-16 rounded-lg"
                 ></img>
                 <h2>{item.name}</h2>
-              </Link>
+              </a>
 
               <div className="flex flex-col">
                 <button
