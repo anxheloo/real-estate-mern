@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import ListingItem from "../components/ListingItem";
 
 const Search = () => {
   const navigate = useNavigate();
-
   const [sideBarDatas, setSideBarDatas] = useState({
     searchTerm: "",
     type: "all",
@@ -19,7 +19,6 @@ const Search = () => {
 
   console.log("SideBarData: ", sideBarDatas);
   console.log("location: ", location.search);
-
   console.log(searchDatas);
 
   const handleChange = (event) => {
@@ -260,6 +259,18 @@ const Search = () => {
         <h1 className="text-3xl font-semibold border-b p-5 text-slate-700 ">
           Listing Results :
         </h1>
+
+        <div className="p-7 flex flex-wrap gap-4">
+          {searchDatas && searchDatas.length > 0 ? (
+            searchDatas.map((item, index) => (
+              <ListingItem key={item._id} item={item}></ListingItem>
+            ))
+          ) : (
+            <p className="text-xl text-center text-slate-700">
+              There are no listings matching your search criteria
+            </p>
+          )}
+        </div>
       </div>
     </div>
   );
